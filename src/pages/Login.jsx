@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, reload } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
@@ -14,8 +14,9 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/home');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await reload(userCredential.user);
+      navigate(userCredential.user.emailVerified ? '/home' : '/verify-email');
     } catch {
       setError('Falha ao autenticar. Verifique e-mail e senha.');
     }

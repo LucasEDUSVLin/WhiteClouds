@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { auth, db } from '../services/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, User, Eye, EyeOff } from 'lucide-react';
@@ -29,7 +29,8 @@ export default function Register() {
         createdAt: new Date().toISOString(),
       });
 
-      navigate('/home');
+      await sendEmailVerification(user);
+      navigate('/verify-email');
     } catch {
       setError('Erro ao criar conta. Verifique os dados fornecidos.');
     }

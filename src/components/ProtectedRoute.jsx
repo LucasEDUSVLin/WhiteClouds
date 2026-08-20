@@ -5,5 +5,6 @@ import { useAuth } from '../context/useAuth';
 export default function ProtectedRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
+  if (!user.emailVerified) return <Navigate to="/verify-email" />;
   return children;
 }
