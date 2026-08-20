@@ -25,8 +25,6 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md p-8 bg-white border border-slate-200 rounded-xl shadow-2xl space-y-6">
         <h1 className="text-3xl font-bold text-center text-indigo-600 tracking-wider">WhiteClouds</h1>
-        <p className="text-sm text-center text-slate-600">Entre com sua conta para continuar</p>
-
         {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded text-sm text-center">{error}</div>}
 
         <form onSubmit={handleLogin} className="space-y-4">
