@@ -9,7 +9,7 @@ import Home from './pages/Home';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/WhiteClouds">
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
