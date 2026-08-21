@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Bell, Cloud, Home as HomeIcon, LogOut, Menu, Plus, Search, Settings, UserRound } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
