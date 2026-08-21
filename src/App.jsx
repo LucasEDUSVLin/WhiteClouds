@@ -6,6 +6,8 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import VerifyEmail from './pages/VerifyEmail';
+import Profile from './pages/Profile';
+import Notifications from './pages/Notifications';
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
           <Route
             path="/home"
             element={
