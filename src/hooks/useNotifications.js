@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 export function useNotifications(userId) {
@@ -17,5 +17,12 @@ export function useNotifications(userId) {
     }, () => setLoading(false));
   }, [userId]);
 
-  return { notifications, loading };
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+  const markAllAsRead = useCallback(async () => {
+    const unreadNotifications = notifications.filter((notification) => !notification.read);
+    await Promise.all(unreadNotifications.map((notification) => updateDoc(doc(db, 'notifications', notification.id), { read: true })));
+  }, [notifications]);
+
+  return { notifications, loading, unreadCount, markAllAsRead };
 }
