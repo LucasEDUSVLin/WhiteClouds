@@ -12,7 +12,7 @@ export default function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { profile } = useProfile(user);
-  const { posts, createPost, toggleLike, removePost } = usePosts(user?.uid);
+  const { posts, createPost, toggleLike, removePost } = usePosts(user?.uid, profile.blockedUsers);
   const [postText, setPostText] = useState('');
   const [isComposerOpen, setIsComposerOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);

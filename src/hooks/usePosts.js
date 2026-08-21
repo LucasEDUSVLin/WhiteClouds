@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
-export function usePosts(userId) {
+const emptyBlockedUsers = [];
+
+export function usePosts(userId, blockedUsers = emptyBlockedUsers) {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const postsQuery = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
     return onSnapshot(postsQuery, (snapshot) => {
-      setPosts(snapshot.docs.map((postDoc) => ({ id: postDoc.id, ...postDoc.data() })));
+      setPosts(snapshot.docs.map((postDoc) => ({ id: postDoc.id, ...postDoc.data() })).filter((post) => !blockedUsers.includes(post.authorId)));
     }, () => setPosts([]));
-  }, []);
+  }, [blockedUsers]);
 
   const createPost = async (content, profile) => {
     await addDoc(collection(db, 'posts'), {

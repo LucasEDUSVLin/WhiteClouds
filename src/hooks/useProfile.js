@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { db, storage } from '../services/firebase';
 
 const defaultProfile = (user) => ({
   name: user?.displayName || 'Usuário WhiteClouds',
   handle: user?.email?.split('@')[0] || 'whitecloud',
   bio: 'Explorando novas ideias nas nuvens.',
   avatarUrl: '',
+  coverUrl: '',
+  blockedUsers: [],
 });
 
 export function useProfile(user) {
@@ -26,9 +29,18 @@ export function useProfile(user) {
   }, [user]);
 
   const saveProfile = async (nextProfile) => {
-    await updateDoc(doc(db, 'users', user.uid), nextProfile);
+    await setDoc(doc(db, 'users', user.uid), nextProfile, { merge: true });
     setProfile((current) => ({ ...current, ...nextProfile }));
   };
 
-  return { profile: profile || defaultProfile(user), loading, saveProfile };
+  const uploadProfileImage = async (file, type) => {
+    if (!file || !user?.uid) return '';
+    const imageRef = ref(storage, `users/${user.uid}/${type}-${Date.now()}-${file.name}`);
+    await uploadBytes(imageRef, file);
+    const url = await getDownloadURL(imageRef);
+    await saveProfile(type === 'avatar' ? { avatarUrl: url } : { coverUrl: url });
+    return url;
+  };
+
+  return { profile: profile || defaultProfile(user), loading, saveProfile, uploadProfileImage };
 }
