@@ -12,7 +12,7 @@ export default function SocialLayout({ children, profile, onCompose, onEditProfi
         <main className="min-w-0 border-r border-slate-200">{children}</main>
         <ProfileSummary profile={profile} onEditProfile={onEditProfile} />
       </div>
-      <MobileNav onCompose={onCompose} />
+      <MobileNav />
     </div>
   );
 }

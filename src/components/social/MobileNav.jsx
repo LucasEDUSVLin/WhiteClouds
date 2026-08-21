@@ -1,4 +1,4 @@
-import { Bell, Home, LogOut, MoreHorizontal, Pencil, Search, UserRound, X } from 'lucide-react';
+import { Bell, Home, LogOut, MoreHorizontal, Search, UserRound, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
@@ -7,7 +7,7 @@ import { useAuth } from '../../context/useAuth';
 import { useNotifications } from '../../hooks/useNotifications';
 import UserSearch from './UserSearch';
 
-export default function MobileNav({ onCompose }) {
+export default function MobileNav() {
   const { user } = useAuth();
   const { unreadCount } = useNotifications(user?.uid);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -17,7 +17,6 @@ export default function MobileNav({ onCompose }) {
     <nav className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-slate-200 bg-white/95 px-2 shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur md:hidden">
       <MobileLink to="/home" label="Início" icon={Home} />
       <button type="button" onClick={() => setIsSearchOpen(true)} className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-xl text-slate-500" aria-label="Buscar na rede"><Search className="h-5 w-5" /><span className="text-[10px]">Buscar</span></button>
-      <button type="button" onClick={onCompose} className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-200" aria-label="Criar post"><Pencil className="h-5 w-5" /></button>
       <MobileLink to="/notifications" label="Notificações" icon={Bell} unreadCount={unreadCount} />
       <MobileLink to="/profile" label="Perfil" icon={UserRound} />
       <button type="button" onClick={() => setIsMenuOpen(true)} className="flex h-12 w-12 flex-col items-center justify-center gap-1 rounded-xl text-slate-500" aria-label="Abrir menu"><MoreHorizontal className="h-5 w-5" /><span className="text-[10px]">Mais</span></button>
