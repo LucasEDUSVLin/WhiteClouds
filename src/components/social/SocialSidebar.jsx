@@ -1,0 +1,11 @@
+import { Bell, Home as HomeIcon, LogOut, UserRound } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../services/firebase';
+import Avatar from '../Avatar';
+
+const navItems = [{ to: '/home', label: 'Início', icon: HomeIcon }, { to: '/profile', label: 'Perfil', icon: UserRound }, { to: '/notifications', label: 'Notificações', icon: Bell }];
+
+export default function SocialSidebar({ profile, onEditProfile }) {
+  return <aside className="hidden border-r border-slate-200 px-4 py-8 md:block"><nav className="space-y-2">{navItems.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} className={({ isActive }) => `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${isActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'}`}><Icon className="h-5 w-5" />{label}</NavLink>)}</nav><div className="mt-10 border-t border-slate-200 pt-6"><button type="button" onClick={onEditProfile} className="flex w-full items-center gap-3 rounded-xl p-2 text-left hover:bg-slate-100"><Avatar name={profile.name} image={profile.avatarUrl} /><span className="min-w-0"><strong className="block truncate text-sm">{profile.name}</strong><span className="block truncate text-xs text-slate-500">@{profile.handle}</span></span></button><button type="button" onClick={() => signOut(auth)} className="mt-5 flex items-center gap-3 px-3 text-sm text-slate-500 hover:text-red-600"><LogOut className="h-4 w-4" />Sair</button></div></aside>;
+}
