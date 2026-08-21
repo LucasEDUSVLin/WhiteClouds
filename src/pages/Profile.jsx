@@ -12,7 +12,7 @@ import SocialLayout from '../components/SocialLayout';
 export default function Profile() {
   const { user } = useAuth();
   const { profile, saveProfile, uploadProfileImage } = useProfile(user);
-  const { posts, createPost, toggleLike, removePost } = usePosts(user?.uid, profile.blockedUsers);
+  const { posts, createPost, toggleLike, removePost } = usePosts(user?.uid, profile.blockedUsers, profile);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isComposerOpen, setIsComposerOpen] = useState(false);
   const [postText, setPostText] = useState('');
