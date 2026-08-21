@@ -2,23 +2,29 @@ import { useState } from 'react';
 import { auth } from '../services/firebase';
 import { signInWithEmailAndPassword, reload } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
-import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, LoaderCircle } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       await reload(userCredential.user);
       navigate(userCredential.user.emailVerified ? '/home' : '/verify-email');
     } catch {
       setError('Falha ao autenticar. Verifique e-mail e senha.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,6 +42,7 @@ export default function Login() {
               <input
                 type="email"
                 required
+                disabled={loading}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-indigo-500"
@@ -51,6 +58,7 @@ export default function Login() {
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
+                disabled={loading}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:outline-none focus:border-indigo-500"
@@ -58,6 +66,7 @@ export default function Login() {
               />
               <button
                 type="button"
+                disabled={loading}
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none cursor-pointer"
               >
@@ -74,9 +83,16 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all cursor-pointer"
+            disabled={loading}
+            aria-busy={loading}
+            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-wait text-white font-semibold rounded-lg transition-all cursor-pointer"
           >
-            Entrar
+            {loading ? (
+              <span className="flex items-center justify-center gap-2" role="status">
+                <LoaderCircle className="w-4 h-4 animate-spin" />
+                Entrando...
+              </span>
+            ) : 'Entrar'}
           </button>
         </form>
 
