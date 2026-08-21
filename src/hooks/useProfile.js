@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { db, storage } from '../services/firebase';
+import { db } from '../services/firebase';
 
 const defaultProfile = (user) => ({
   name: user?.displayName || 'Usuário WhiteClouds',
@@ -33,14 +32,5 @@ export function useProfile(user) {
     setProfile((current) => ({ ...current, ...nextProfile }));
   };
 
-  const uploadProfileImage = async (file, type) => {
-    if (!file || !user?.uid) return '';
-    const imageRef = ref(storage, `users/${user.uid}/${type}-${Date.now()}-${file.name}`);
-    await uploadBytes(imageRef, file);
-    const url = await getDownloadURL(imageRef);
-    await saveProfile(type === 'avatar' ? { avatarUrl: url } : { coverUrl: url });
-    return url;
-  };
-
-  return { profile: profile || defaultProfile(user), loading, saveProfile, uploadProfileImage };
+  return { profile: profile || defaultProfile(user), loading, saveProfile };
 }
