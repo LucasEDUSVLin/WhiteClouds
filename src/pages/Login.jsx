@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword, reload } from 'firebase/auth';
+import { auth, db } from '../services/firebase';
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, reload } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff, LoaderCircle } from 'lucide-react';
 
@@ -23,6 +24,40 @@ export default function Login() {
       navigate(userCredential.user.emailVerified ? '/home' : '/verify-email');
     } catch {
       setError('Falha ao autenticar. Verifique e-mail e senha.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName || 'Usuário WhiteClouds',
+          email: user.email,
+          handle: (user.email || 'whitecloud').split('@')[0].replace(/\s+/g, '').toLowerCase(),
+          bio: 'Explorando novas ideias nas nuvens.',
+          avatarUrl: user.photoURL || '',
+          coverUrl: '',
+          blockedUsers: [],
+          createdAt: new Date().toISOString(),
+        }, { merge: true });
+      }
+
+      await reload(user);
+      navigate(user.emailVerified ? '/home' : '/verify-email');
+    } catch {
+      setError('Não foi possível entrar com o Google. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -93,6 +128,15 @@ export default function Login() {
                 Entrando...
               </span>
             ) : 'Entrar'}
+          </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={handleGoogleLogin}
+            className="w-full py-2.5 border border-slate-200 bg-white text-slate-700 font-semibold rounded-lg transition-all hover:bg-slate-50 disabled:cursor-wait disabled:opacity-70"
+          >
+            Continuar com Google
           </button>
         </form>
 
